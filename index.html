@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoNews AI - Smart News</title>
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js');
+        }
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; transition: background 0.3s, color 0.3s; }
+        body.dark-mode { background: #121212; color: white; }
+        .container { max-width: 700px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background: white; }
+        .dark-mode .container { background: #222; border-color: #555; }
+        .buttons { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+        button { padding: 10px; cursor: pointer; border: none; border-radius: 5px; }
+        button:hover { opacity: 0.8; }
+        .news-card { padding: 15px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .dark-mode .news-card { border-color: #555; }
+        #likeCount { font-weight: bold; }
+        .ad-container { text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📰 AutoNews AI - Smart News</h1>
+        <p>यह AI-संचालित समाचार प्लेटफ़ॉर्म है जो आपको नवीनतम और स्वचालित समाचार प्रदान करता है।</p>
+
+        <div id="news-section">
+            <div class="news-card">
+                <h2>🚀 AI ने नया रिकॉर्ड तोड़ा!</h2>
+                <p class="news-content">AI तकनीक ने इंसानों से तेज़ काम करने का नया रिकॉर्ड बनाया...</p>
+                <div class="buttons">
+                    <button onclick="speakNews(this)">🔊 सुनें</button>
+                    <button onclick="likeNews(this)">👍 Like <span class="like-count">0</span></button>
+                    <button onclick="shareNews()">🔗 शेयर करें</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="ad-container">
+            <!-- Monetization (Google Ads or Affiliate Ads) -->
+            <p>🔗 <a href="https://www.amazon.in" target="_blank">Amazon Trending Deals</a></p>
+        </div>
+
+        <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+
+        <!-- WhatsApp & Twitter Share Buttons -->
+        <a href="https://api.whatsapp.com/send?text=Check%20this%20news:%20YOUR_NEWS_URL" target="_blank">📩 Share on WhatsApp</a>
+        <a href="https://twitter.com/intent/tweet?text=Check%20this%20news:%20YOUR_NEWS_URL" target="_blank">🐦 Share on Twitter</a>
+
+        <!-- Disqus Comment Section -->
+        <div id="disqus_thread"></div>
+        <script>
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://YOUR-DISQUS-SHORTNAME.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    </div>
+
+    <script>
+        function speakNews(button) {
+            let text = button.closest('.news-card').querySelector('.news-content').innerText;
+            let speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'hi-IN';
+            speech.rate = 1;
+            window.speechSynthesis.speak(speech);
+        }
+
+        function likeNews(button) {
+            let countElem = button.querySelector('.like-count');
+            countElem.innerText = parseInt(countElem.innerText) + 1;
+        }
+
+        function shareNews() {
+            let url = window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: "Check this news!", url: url });
+            } else {
+                alert("Sharing not supported on this device.");
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
+        function fetchLatestNews() {
+            let newsData = [
+                { title: "🚀 AI ने नया रिकॉर्ड तोड़ा!", content: "AI तकनीक ने इंसानों से तेज़ काम करने का नया रिकॉर्ड बनाया..." },
+                { title: "📉 शेयर बाजार में गिरावट", content: "आज शेयर बाजार में भारी गिरावट दर्ज की गई है..." },
+                { title: "⚡ 5G स्पीड टेस्ट का रिजल्ट", content: "भारत में 5G नेटवर्क की स्पीड टेस्ट रिपोर्ट जारी..." }
+            ];
+
+            let newsSection = document.getElementById('news-section');
+            newsSection.innerHTML = ''; 
+
+            newsData.forEach(news => {
+                let newsCard = document.createElement('div');
+                newsCard.className = 'news-card';
+                newsCard.innerHTML = `
+                    <h2>${news.title}</h2>
+                    <p class="news-content">${news.content}</p>
+                    <div class="buttons">
+                        <button onclick="speakNews(this)">🔊 सुनें</button>
+                        <button onclick="likeNews(this)">👍 Like <span class="like-count">0</span></button>
+                        <button onclick="shareNews()">🔗 शेयर करें</button>
+                    </div>
+                `;
+                newsSection.appendChild(newsCard);
+            });
+        }
+
+        setInterval(fetchLatestNews, 60000); // हर 60 सेकंड में नई खबरें लोड होंगी
+        fetchLatestNews(); // पेज लोड होते ही खबरें लोड करें
+    </script>
+</body>
+</html>
